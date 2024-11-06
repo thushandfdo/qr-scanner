@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import the Popins font */
+@import url('https://fonts.google.com/specimen/Poppins');
+
+/* Set Popins as the base font */
+html {
+    font-family: 'Poppins', sans-serif;
+}
