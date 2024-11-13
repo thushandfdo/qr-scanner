@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-const useFetch = (url, options = {}, timeout = 5000) => {
+const useFetch = (url, options, timeout = 5000) => {
     const [data, setData] = useState(null);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -11,7 +11,7 @@ const useFetch = (url, options = {}, timeout = 5000) => {
             try {
                 const controller = new AbortController();
                 const timer = setTimeout(() => controller.abort(), timeout);
-                const response = await fetch(url, { ...options, signal: controller.signal });
+                const response = await fetch(url, {...(options ?? {}), signal: controller.signal });
                 clearTimeout(timer);
 
                 if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
@@ -25,7 +25,7 @@ const useFetch = (url, options = {}, timeout = 5000) => {
         };
 
         fetchData();
-    }, [url, options, timeout]);
+    }, [options, timeout, url]);
 
     return { data, loading, error };
 };

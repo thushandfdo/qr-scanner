@@ -1,49 +1,80 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 
 // local imports
 import { CheckCard, DisplayArea, ScanArea, ZoneCard } from '../../components';
 import { icons } from '../../consts';
 import useFetch from '../../hooks/useFetch';
 
+const zones = [
+    { id: 0, title: 'Regular' },
+    { id: 1, title: 'Back Stage' },
+    { id: 2, title: 'VIP' }
+];
+
+const eventName = 'Night with WAYO';
+
+const BASE_URL = 'https://my-json-server.typicode.com/thushandfdo/fake-json-server/posts/';
+
 const Home = () => {
     const inputRef = useRef(null);
+    const [input, setInput] = useState('');
     const [output, setOutput] = useState('');
 
     const [selectedZone, setSelectedZone] = useState(0);
     const [checkIn, setCheckIn] = useState(true);
 
-    // const { data, loading, error } = useFetch('http://localhost:4003/scan/check-in');
+    const [scanLink, setScanLink] = useState(1);
+    const [status, setStatus] = useState(null);
+
+    const { data, loading, error } = useFetch(BASE_URL + scanLink);
 
     const setFocus = () => {
         inputRef.current.focus();
     };
 
     const handleClear = () => {
+        setScanLink('');
+        setInput('');
         setOutput('');
+        setStatus(null);
     };
+
+    useEffect(() => {
+        if (output.length !== 3) return;
+
+        setScanLink(output.toLowerCase());
+
+        if (data) {
+            const { message } = data;
+            if (message === 'QR code validated. Status set to IN') {
+                setStatus('success');
+            } else if (message === 'Already checked in') {
+                setStatus('warning');
+            } else {
+                setStatus('error');
+            }
+        } else {
+            setStatus('error');
+        }
+
+        setTimeout(() => {
+            setInput('');
+        }, 2000);
+    }, [data, output]);
 
     return (
         <div className="flex h-screen py-4" onClick={setFocus}>
             <div className="flex flex-col justify-between w-16 gap-1 mt-5">
                 <div className="">
-                    <ZoneCard
-                        id={0}
-                        title="Zone 01"
-                        active={selectedZone === 0}
-                        setSelectedZone={setSelectedZone}
-                    />
-                    <ZoneCard
-                        id={1}
-                        title="Zone 01"
-                        active={selectedZone === 1}
-                        setSelectedZone={setSelectedZone}
-                    />
-                    <ZoneCard
-                        id={2}
-                        title="Zone 01"
-                        active={selectedZone === 2}
-                        setSelectedZone={setSelectedZone}
-                    />
+                    {zones.map((zone) => (
+                        <ZoneCard
+                            key={zone.id}
+                            id={zone.id}
+                            title={zone.title}
+                            active={selectedZone === zone.id}
+                            setSelectedZone={setSelectedZone}
+                        />
+                    ))}
                 </div>
                 <div className="flex flex-col gap-5">
                     <CheckCard
@@ -60,16 +91,21 @@ const Home = () => {
                     />
                 </div>
             </div>
-            <div className="flex flex-col w-full sm:flex-row">
-                <div className="w-[60%] bg-gradient-to-r from-gray-400 to-gray-100 rounded-l-lg">
+            <div className="flex flex-col w-full sm:flex-row rounded-l-lg bg-gradient-to-r from-gray-400 from-10% via-gray-100 to-white">
+                <div className="w-[50%]">
                     <ScanArea
                         inputRef={inputRef}
+                        input={input}
+                        setInput={setInput}
                         setOutput={setOutput}
                         handleClear={handleClear}
+                        eventName={eventName}
+                        zone={zones[selectedZone].title}
                     />
                 </div>
-                <div className="w-[40%] bg-gradient-to-r from-gray-100 to-white">
-                    <DisplayArea output={output} />
+                <div className="w-[50%]">
+                    {!loading && !error && <DisplayArea output={output} status={status} isCheckingIn={checkIn} />}
+                    {status === 'error' && error && <DisplayArea output={output} error={error} />}
                 </div>
             </div>
         </div>

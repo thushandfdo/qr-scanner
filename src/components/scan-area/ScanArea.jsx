@@ -1,12 +1,12 @@
-import { useState } from 'react';
-
 const ScanArea = ({
     inputRef,
     setOutput,
     handleClear,
+    eventName,
+    zone,
+    input, 
+    setInput
 }) => {
-    const [input, setInput] = useState('');
-
     const handleChange = (e) => {
         const value = e.target.value;
         setInput(value);
@@ -24,18 +24,13 @@ const ScanArea = ({
         }
     };
 
-    const clearScreen = () => {
-        setInput('');
-        handleClear();
-    }
-
     return (
         <div className="flex flex-col items-center justify-center h-full gap-5">
-            <p className="mb-2 text-5xl font-semibold">Event Name</p>
+            <p className="mb-2 text-5xl font-semibold">{eventName}</p>
             <p className="mb-10 text-2xl italic text-gray-800">
                 Welcome to the
-                <span className="p-2 text-3xl font-semibold tracking-widest text-blue-700">
-                    VIP
+                <span className="p-2 text-3xl font-semibold tracking-wider text-blue-700">
+                    {zone}
                 </span>
                 zone..!
             </p>
@@ -50,7 +45,7 @@ const ScanArea = ({
                 />
                 <button 
                     className="w-48 px-4 py-2 font-semibold tracking-wider text-white uppercase rounded-lg bg-slate-800"
-                    onClick={clearScreen}
+                    onClick={handleClear}
                 >
                     Clear Screen
                 </button>

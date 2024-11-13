@@ -11,11 +11,12 @@ const ZoneCard = ({ id, active = false, title = '-', setSelectedZone }) => {
             {active && <div className="h-3 bg-white rounded-br-2xl"></div>}
             <div className="bg-white">
                 <div
-                    className={`rounded-l-2xl ${active ? 'bg-gray-400 ml-2' : 'hover:bg-gray-400 hover:rounded-2xl hover:mx-2'}`}
+                    className={`rounded-l-2xl ml-2 ${active ? 'bg-gray-400 border-r-2 border-gray-100' : 'hover:bg-gray-400 hover:rounded-2xl hover:mr-2'}`}
                 >
-                    <div className="flex items-center justify-center -rotate-90 h-28 whitespace-nowrap">
+                    <div className={`-rotate-90 h-36 flex items-center justify-center whitespace-nowrap`}>
                         <span
-                            className={`text-xl ${active ? 'font-semibold border-b-2 border-gray-100 pb-3 px-2 mt-3' : ''}`}>
+                            className={`text-xl ${active ? 'font-semibold' : ''}`}
+                        >
                             {title}
                         </span>
                     </div>
