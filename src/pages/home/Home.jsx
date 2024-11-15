@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect, useMemo } from 'react';
 
 // local imports
-import { CheckCard, DisplayArea, ScanArea, ZoneCard } from '../../components';
+import { CheckCard, DisplayArea, EventLayer, ScanArea, ZoneCard } from '../../components';
 import { icons } from '../../consts';
 import useFetch from '../../hooks/useFetch';
 
@@ -26,16 +26,19 @@ const Home = () => {
 
     const [status, setStatus] = useState(null);
 
-    const options = useMemo(() => ({
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            "index": index,
-            "requestedZone": zones[selectedZone]?.title || '',
-        })
-    }), [index, selectedZone]);
+    const options = useMemo(
+        () => ({
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                index: index,
+                requestedZone: zones[selectedZone]?.title || ''
+            })
+        }),
+        [index, selectedZone]
+    );
     const { data, loading, error } = useFetch(BASE_URL, index !== null ? options : null);
 
     const setFocus = () => {
@@ -53,7 +56,7 @@ const Home = () => {
 
         setOutput(output);
 
-        const ind = JSON.parse(output)["INDEX"];
+        const ind = JSON.parse(output)['INDEX'];
         setIndex(ind);
         console.log('index', ind);
 
@@ -76,49 +79,56 @@ const Home = () => {
     }, [data, loading, output, selectedZone]);
 
     return (
-        <div className="flex h-screen py-4" onClick={setFocus}>
-            <div className="flex flex-col justify-between w-16 gap-1 mt-5">
-                <div className="">
-                    {zones.map((zone) => (
-                        <ZoneCard
-                            key={zone.id}
-                            id={zone.id}
-                            title={zone.title}
-                            active={selectedZone === zone.id}
-                            setSelectedZone={setSelectedZone}
+        <div className="">
+            <EventLayer />
+            <div className="flex h-screen py-4" onClick={setFocus}>
+                <div className="flex flex-col justify-between w-16 gap-1 mt-5">
+                    <div className="">
+                        {zones.map((zone) => (
+                            <ZoneCard
+                                key={zone.id}
+                                id={zone.id}
+                                title={zone.title}
+                                active={selectedZone === zone.id}
+                                setSelectedZone={setSelectedZone}
+                            />
+                        ))}
+                    </div>
+                    <div className="flex flex-col gap-5">
+                        <CheckCard
+                            image={icons.checkIn}
+                            text="in"
+                            active={checkIn}
+                            swapStatus={setCheckIn}
                         />
-                    ))}
+                        <CheckCard
+                            image={icons.checkOut}
+                            text="out"
+                            active={!checkIn}
+                            swapStatus={setCheckIn}
+                        />
+                    </div>
                 </div>
-                <div className="flex flex-col gap-5">
-                    <CheckCard
-                        image={icons.checkIn}
-                        text="in"
-                        active={checkIn}
-                        swapStatus={setCheckIn}
-                    />
-                    <CheckCard
-                        image={icons.checkOut}
-                        text="out"
-                        active={!checkIn}
-                        swapStatus={setCheckIn}
-                    />
-                </div>
-            </div>
-            <div className="flex flex-col w-full sm:flex-row rounded-l-lg bg-gradient-to-r from-gray-400 from-10% via-gray-100 to-white">
-                <div className="w-[50%]">
-                    <ScanArea
-                        inputRef={inputRef}
-                        input={input}
-                        setInput={setInput}
-                        setOutput={setOutput}
-                        handleClear={handleClear}
-                        eventName={eventName}
-                        zone={zones[selectedZone].title}
-                    />
-                </div>
-                <div className="w-[50%]">
-                    {!loading && !error && <DisplayArea output={output} status={status} isCheckingIn={checkIn} />}
-                    {status === 'error' && error && <DisplayArea output={output} error={error} />}
+                <div className="flex flex-col w-full sm:flex-row rounded-l-lg bg-gradient-to-r from-gray-400 from-10% via-gray-100 to-white">
+                    <div className="w-[50%]">
+                        <ScanArea
+                            inputRef={inputRef}
+                            input={input}
+                            setInput={setInput}
+                            setOutput={setOutput}
+                            handleClear={handleClear}
+                            eventName={eventName}
+                            zone={zones[selectedZone].title}
+                        />
+                    </div>
+                    <div className="w-[50%]">
+                        {!loading && !error && (
+                            <DisplayArea output={output} status={status} isCheckingIn={checkIn} />
+                        )}
+                        {status === 'error' && error && (
+                            <DisplayArea output={output} error={error} />
+                        )}
+                    </div>
                 </div>
             </div>
         </div>

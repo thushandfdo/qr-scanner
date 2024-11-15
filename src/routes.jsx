@@ -2,6 +2,7 @@ import { useRoutes } from 'react-router-dom';
 
 // local imports
 import {
+    Dashboard,
     Home,
     QrCodes,
     Sample,
@@ -12,6 +13,10 @@ const Router = () => {
         {
             path: '*',
             element: <Home />,
+        },
+        {
+            path: '/dashboard',
+            element: <Dashboard />
         },
         {
             path: '/qr-codes',
