@@ -3,6 +3,7 @@ import { useRoutes } from 'react-router-dom';
 // local imports
 import {
     Home,
+    QrCodes,
     Sample,
 } from './pages';
 
@@ -11,6 +12,10 @@ const Router = () => {
         {
             path: '*',
             element: <Home />,
+        },
+        {
+            path: '/qr-codes',
+            element: <QrCodes />,
         },
         {
             path: '/sample',

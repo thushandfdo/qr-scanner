@@ -30,7 +30,7 @@ const DisplayArea = ({ output, status, isCheckingIn = true, error }) => {
                     <div className="border-2 border-red-900 rounded-xl w-[500px] h-[300px] flex flex-col gap-5 justify-center items-center text-3xl">
                         {error ? (
                             <>
-                                <p className="">ID: {output}</p>
+                                <p className="">{output}</p>
                                 <p className="font-semibold">Something went wrong...!</p>
                                 <p className="">{error}</p>
                             </>

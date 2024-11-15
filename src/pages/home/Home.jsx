@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useMemo } from 'react';
 
 // local imports
 import { CheckCard, DisplayArea, ScanArea, ZoneCard } from '../../components';
@@ -13,36 +13,49 @@ const zones = [
 
 const eventName = 'Night with WAYO';
 
-const BASE_URL = 'https://my-json-server.typicode.com/thushandfdo/fake-json-server/posts/';
+const BASE_URL = 'http://localhost:4003/scan/check-in';
 
 const Home = () => {
     const inputRef = useRef(null);
     const [input, setInput] = useState('');
     const [output, setOutput] = useState('');
+    const [index, setIndex] = useState(0);
 
     const [selectedZone, setSelectedZone] = useState(0);
     const [checkIn, setCheckIn] = useState(true);
 
-    const [scanLink, setScanLink] = useState(1);
     const [status, setStatus] = useState(null);
 
-    const { data, loading, error } = useFetch(BASE_URL + scanLink);
+    const options = useMemo(() => ({
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            "index": index,
+            "requestedZone": zones[selectedZone]?.title || '',
+        })
+    }), [index, selectedZone]);
+    const { data, loading, error } = useFetch(BASE_URL, index !== null ? options : null);
 
     const setFocus = () => {
         inputRef.current.focus();
     };
 
     const handleClear = () => {
-        setScanLink('');
         setInput('');
         setOutput('');
         setStatus(null);
     };
 
     useEffect(() => {
-        if (output.length !== 3) return;
+        if (output.length !== 11) return;
 
-        setScanLink(output.toLowerCase());
+        setOutput(output);
+
+        const ind = JSON.parse(output)["INDEX"];
+        setIndex(ind);
+        console.log('index', ind);
 
         if (data) {
             const { message } = data;
@@ -60,7 +73,7 @@ const Home = () => {
         setTimeout(() => {
             setInput('');
         }, 2000);
-    }, [data, output]);
+    }, [data, loading, output, selectedZone]);
 
     return (
         <div className="flex h-screen py-4" onClick={setFocus}>
