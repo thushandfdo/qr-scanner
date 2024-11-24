@@ -47,7 +47,7 @@ const ScanArea = ({
                     className="w-48 px-4 py-2 font-semibold tracking-wider text-white uppercase rounded-lg bg-slate-800"
                     onClick={handleClear}
                 >
-                    Clear Text
+                    Clear Screen
                 </button>
             </div>
         </div>

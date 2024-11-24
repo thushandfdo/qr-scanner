@@ -12,7 +12,7 @@ const SearchBox = ({ search, setSearch }) => {
                 onChange={(e) => setSearch(e.target.value)}
                 className="border-0 focus:outline-none"
             />
-            <img src={icons.clear} className="w-5 h-5" alt="" onClick={() => setSearch('')} />
+            <img src={icons.clear} className="w-5 h-5 cursor-pointer" alt="" onClick={() => setSearch('')} />
         </div>
     );
 };

@@ -3,22 +3,41 @@ import JSZip from 'jszip';
 
 // local imports
 import { qrCodes } from '../../data/data';
-import { DownloadButton, FilterButton, QrCode, SearchBox } from '../../components';
+import { DownloadButton, EventLayer, FilterButton, QrCode, SearchBox } from '../../components';
+import useFetch from '../../hooks/useFetch';
 
-const QrCodes = ({ zones = ["VIP", "Regulur"] }) => {
-    zones.push('All');
-    const [zone, setZone] = useState('All');
+const QrCodes = () => {
+    const [zones, setZones] = useState([]);
+    const [selectedZone, setSelectedZone] = useState('All');
     const [search, setSearch] = useState('');
     const [tempCodes, setTempCodes] = useState(qrCodes.createdRecords);
+    const [eventId, setEventId] = useState(0);
+
+    const { fetchData } = useFetch();
 
     useEffect(() => {
         setSearch(search);
         setTempCodes(
             qrCodes.createdRecords
-                .filter((code) => zone === 'All' || code.zone.toLowerCase() === zone.toLowerCase())
-                .filter((code) => code.id.toString().includes(search.toLowerCase()))
+                .filter((code) => selectedZone === 'All' || code.zone.toLowerCase() === selectedZone.toLowerCase())
+                .filter((code) => code.codeNumber.toString().includes(search.toLowerCase()))
         );
-    }, [search, zone]);
+    }, [search, selectedZone]);
+
+    useEffect(() => {
+        if (eventId === 0) return;
+
+        const getData = async () => {
+            const response = await fetchData(`http://localhost:4002/api/event/getevent/${eventId}`);
+            if (response && response.result) {
+                const { result } = response;
+                const zs = result.zones.map((zone) => zone.type);
+                zs.push('All');
+                setZones(zs);
+            }
+        };
+        getData();
+    }, [eventId, fetchData]);
 
     const downloadQRs = async () => {
         const zip = new JSZip();
@@ -26,7 +45,7 @@ const QrCodes = ({ zones = ["VIP", "Regulur"] }) => {
         for (const code of qrCodes.createdRecords) {
             try {
                 if (code) {
-                    zip.file(`${code.zone}/${code.id}.png`, code.qrcode.split(';base64,')[1], {
+                    zip.file(`${code.zone}/${code.codeNumber}.png`, code.qrcode.split(';base64,')[1], {
                         base64: true
                     });
                 }
@@ -45,14 +64,15 @@ const QrCodes = ({ zones = ["VIP", "Regulur"] }) => {
 
     return (
         <div className="h-screen">
+            {eventId === 0 && <EventLayer setEventId={setEventId} />}
             <div className="fixed flex items-center justify-between w-full p-3 bg-white border-b-2 border-b-gray-600">
                 <p className="text-lg font-semibold">
-                    {zone}: {tempCodes.length} qr-code(s)
+                    {selectedZone}: {tempCodes.length} qr-code(s)
                 </p>
                 <div className="flex justify-end gap-3">
                     <SearchBox search={search} setSearch={setSearch} />
                     {zones.map((z) => (
-                        <FilterButton key={z} zone={z} selectedZone={zone} setZone={setZone} />
+                        <FilterButton key={z} zone={z} selectedZone={selectedZone} setZone={setSelectedZone} />
                     ))}
                     <DownloadButton onClick={downloadQRs} />
                 </div>

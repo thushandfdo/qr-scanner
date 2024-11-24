@@ -13,8 +13,9 @@ const EventLayer = ({ setEventId }) => {
                 onChange={(e) => setText(e.target.value)}
             />
             <button
-                onClick={setEventId}
-                className="flex items-center justify-center h-[42px] gap-2 p-2 px-4 py-1 text-white uppercase bg-black rounded-lg">
+                onClick={() => setEventId(text)}
+                className="flex items-center justify-center h-[42px] gap-2 p-2 px-4 py-1 text-white uppercase bg-black rounded-lg"
+            >
                 <span>Submit</span>
             </button>
         </div>
