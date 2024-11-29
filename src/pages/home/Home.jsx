@@ -10,11 +10,12 @@ const Home = () => {
     
     const [input, setInput] = useState('');
     const [output, setOutput] = useState('');
-    const [selectedZone, setSelectedZone] = useState(0);
+    const [selectedZone, setSelectedZone] = useState(1);
     const [isCheckIn, setIsCheckIn] = useState(true);
     const [status, setStatus] = useState(null);
     const [eventId, setEventId] = useState(0);
     const [event, setEvent] = useState(null);
+    const [errorMsg, setErrorMsg] = useState(null);
 
     const { loading, error, fetchData } = useFetch();
 
@@ -45,12 +46,12 @@ const Home = () => {
         if (eventId === 0) return;
 
         const getData = async () => {
-            const response = await fetchData(`http://localhost:4002/api/event/getevent/${eventId}`);
+            const response = await fetchData(`https://event.eagleeyelk.com/api/event/getevent/${eventId}`);
             if (response && response.result) {
                 const { result } = response;
-                const zones = result.zones.map((zone, index) => {
+                const zones = result.zones.map((zone) => {
                     return {
-                        id: index,
+                        id: zone.level,
                         title: zone.type,
                         capacity: zone.limit
                     };
@@ -73,20 +74,19 @@ const Home = () => {
             setOutput(output);
 
             const getData = async () => {
-                const result = await fetchData(`http://localhost:4003/scan/check-${isCheckIn ? 'in' : 'out'}`, {
+                const result = await fetchData(`https://qr.eagleeyelk.com/scan/check-${isCheckIn ? 'in' : 'out'}`, {
                     method: 'POST',
                     body: JSON.stringify({
                         index: obj['INDEX'],
-                        requestedZone: event.zones[selectedZone].title.toUpperCase()
+                        requestedZone: selectedZone,
                     })
                 });
 
                 if (result) {
-                    const { status_code } = result;
-                    if (status_code === 5) {
+                    const { status_code, message } = result;
+                    setErrorMsg(message);
+                    if (status_code === 200) {
                         setStatus('success');
-                    } else if (status_code === 2) {
-                        setStatus('warning');
                     } else {
                         setStatus('error');
                     }
@@ -94,12 +94,16 @@ const Home = () => {
                     setStatus('error');
                 }
 
-                setTimeout(() => {
-                    setInput('');
-                }, 2000);
+                // setTimeout(() => {
+                //     setInput('');
+                // }, 500);
             };
             getData();
         }
+
+        setTimeout(() => {
+            setInput('');
+        }, 500);
     }, [output]);
 
     return (
@@ -142,15 +146,12 @@ const Home = () => {
                             setOutput={setOutput}
                             handleClear={handleClear}
                             eventName={event.name}
-                            zone={event.zones[selectedZone].title}
+                            zone={event.zones.filter((zone) => zone.id === selectedZone)[0].title}
                         />}
                     </div>
                     <div className="">
-                        {!loading && !error && (
-                            <DisplayArea output={output} status={status} isCheckingIn={isCheckIn} />
-                        )}
-                        {status === 'error' && error && (
-                            <DisplayArea output={output} error={error} />
+                        {!loading && (
+                            <DisplayArea error={error} errorMsg={errorMsg} output={output} status={status} isCheckingIn={isCheckIn} />
                         )}
                     </div>
                 </div>

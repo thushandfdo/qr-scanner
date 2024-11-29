@@ -11,14 +11,15 @@ const ScanArea = ({
         const value = e.target.value;
         setInput(value);
 
-        const groups = input.match(/.{1,3}/g);
+        // const groups = input.match(/.{1,3}/g);
 
-        if (groups) {
-            groups.pop();
-            const asciiString = groups
-                .map((group) => String.fromCharCode(parseInt(group, 10)))
-                .join('');
-            setOutput(asciiString);
+        if (value.length > 11) {
+            // groups.pop();
+            // const asciiString = groups
+            //     .map((group) => String.fromCharCode(parseInt(group, 10)))
+            //     .join('');
+            // setOutput(asciiString);
+            setOutput(value);
         } else {
             setOutput('');
         }

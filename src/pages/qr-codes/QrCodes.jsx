@@ -28,7 +28,7 @@ const QrCodes = () => {
         if (eventId === 0) return;
 
         const getData = async () => {
-            const response = await fetchData(`http://localhost:4002/api/event/getevent/${eventId}`);
+            const response = await fetchData(`https://event.eagleeyelk.com/api/event/getevent/${eventId}`);
             if (response && response.result) {
                 const { result } = response;
                 const zs = result.zones.map((zone) => zone.type);
