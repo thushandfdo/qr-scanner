@@ -2,27 +2,23 @@ const ScanArea = ({
     inputRef,
     setOutput,
     handleClear,
+    checkEntry,
     eventName,
     zone,
-    input, 
+    input,
     setInput
 }) => {
-    const handleChange = (e) => {
-        const value = e.target.value;
+    const handleCheck = async (value) => {
+        setOutput(value);
+        await checkEntry(value);
+        setInput('');
+    };
+
+    const updateInput = (value) => {
         setInput(value);
-
-        // const groups = input.match(/.{1,3}/g);
-
-        if (value.length > 11) {
-            // groups.pop();
-            // const asciiString = groups
-            //     .map((group) => String.fromCharCode(parseInt(group, 10)))
-            //     .join('');
-            // setOutput(asciiString);
-            setOutput(value);
-        } else {
-            setOutput('');
-        }
+        setTimeout(() => {
+            setInput('');
+        }, 1000);
     };
 
     return (
@@ -37,17 +33,20 @@ const ScanArea = ({
             </p>
             <div className="flex flex-col items-center gap-3">
                 <input
+                    autoFocus
                     ref={inputRef}
                     type="text"
                     className="p-2 text-center border border-black rounded-lg w-96"
                     placeholder="Scan your QR Code..."
                     value={input}
-                    onChange={(e) => handleChange(e)}
+                    onChange={(e) => updateInput(e.target.value)}
+                    onKeyDown={(e) =>
+                        e.key === 'Enter' && input.length > 0 && handleCheck(e.target.value.trim())
+                    }
                 />
-                <button 
+                <button
                     className="w-48 px-4 py-2 font-semibold tracking-wider text-white uppercase rounded-lg bg-slate-800"
-                    onClick={handleClear}
-                >
+                    onClick={handleClear}>
                     Clear Screen
                 </button>
             </div>
