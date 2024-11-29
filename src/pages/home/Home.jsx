@@ -7,7 +7,7 @@ import useFetch from '../../hooks/useFetch';
 
 const Home = () => {
     const inputRef = useRef(null);
-    
+
     const [input, setInput] = useState('');
     const [output, setOutput] = useState('');
     const [selectedZone, setSelectedZone] = useState(1);
@@ -29,15 +29,6 @@ const Home = () => {
         setStatus(null);
     };
 
-    const isJson = (str) => {
-        try {
-            return JSON.parse(str);
-        } catch (e) {
-            console.log(e);
-            return false;
-        }
-    };
-
     useEffect(() => {
         handleClear();
     }, [selectedZone, isCheckIn]);
@@ -46,7 +37,9 @@ const Home = () => {
         if (eventId === 0) return;
 
         const getData = async () => {
-            const response = await fetchData(`https://event.eagleeyelk.com/api/event/getevent/${eventId}`);
+            const response = await fetchData(
+                `https://event.eagleeyelk.com/api/event/getevent/${eventId}`
+            );
             if (response && response.result) {
                 const { result } = response;
                 const zones = result.zones.map((zone) => {
@@ -66,45 +59,36 @@ const Home = () => {
         getData();
     }, [eventId, fetchData]);
 
-    useEffect(() => {
-        if (output.length < 11) return;
-
-        const obj = isJson(output);
-        if (obj) {
-            setOutput(output);
-
-            const getData = async () => {
-                const result = await fetchData(`https://qr.eagleeyelk.com/scan/check-${isCheckIn ? 'in' : 'out'}`, {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        index: obj['INDEX'],
-                        requestedZone: selectedZone,
-                    })
-                });
-
-                if (result) {
-                    const { status_code, message } = result;
-                    setErrorMsg(message);
-                    if (status_code === 200) {
-                        setStatus('success');
-                    } else {
-                        setStatus('error');
-                    }
-                } else {
-                    setStatus('error');
-                }
-
-                // setTimeout(() => {
-                //     setInput('');
-                // }, 500);
-            };
-            getData();
+    const checkEntry = async (value) => {
+        if (Number.isNaN(Number(value))) {
+            setErrorMsg('Invalid QR Code');
+            setStatus('error');
+            return;
         }
 
-        setTimeout(() => {
-            setInput('');
-        }, 500);
-    }, [output]);
+        const result = await fetchData(
+            `https://qr.eagleeyelk.com/scan/check-${isCheckIn ? 'in' : 'out'}`,
+            {
+                method: 'POST',
+                body: JSON.stringify({
+                    index: Number(value),
+                    requestedZone: selectedZone
+                })
+            }
+        );
+
+        if (result) {
+            const { status_code, message } = result;
+            setErrorMsg(message);
+            if (status_code === 200) {
+                setStatus('success');
+            } else {
+                setStatus('error');
+            }
+        } else {
+            setStatus('error');
+        }
+    };
 
     return (
         <div className="">
@@ -112,15 +96,16 @@ const Home = () => {
             <div className="flex h-screen py-4" onClick={setFocus}>
                 <div className="flex flex-col justify-between w-16 gap-1 mt-5">
                     <div className="">
-                        {event && event.zones.map((zone) => (
-                            <ZoneCard
-                                key={zone.id}
-                                id={zone.id}
-                                title={zone.title}
-                                active={selectedZone === zone.id}
-                                setSelectedZone={setSelectedZone}
-                            />
-                        ))}
+                        {event &&
+                            event.zones.map((zone) => (
+                                <ZoneCard
+                                    key={zone.id}
+                                    id={zone.id}
+                                    title={zone.title}
+                                    active={selectedZone === zone.id}
+                                    setSelectedZone={setSelectedZone}
+                                />
+                            ))}
                     </div>
                     <div className="flex flex-col gap-5">
                         <CheckCard
@@ -139,19 +124,30 @@ const Home = () => {
                 </div>
                 <div className="grid grid-cols-1 grid-rows-2 w-full lg:grid-cols-2 lg:grid-rows-1 justify-center items-center rounded-l-lg bg-gradient-to-r from-gray-400 from-10% via-gray-100 to-white">
                     <div className="">
-                        {event && <ScanArea
-                            inputRef={inputRef}
-                            input={input}
-                            setInput={setInput}
-                            setOutput={setOutput}
-                            handleClear={handleClear}
-                            eventName={event.name}
-                            zone={event.zones.filter((zone) => zone.id === selectedZone)[0].title}
-                        />}
+                        {event && (
+                            <ScanArea
+                                inputRef={inputRef}
+                                input={input}
+                                setInput={setInput}
+                                setOutput={setOutput}
+                                checkEntry={checkEntry}
+                                handleClear={handleClear}
+                                eventName={event.name}
+                                zone={
+                                    event.zones.filter((zone) => zone.id === selectedZone)[0].title
+                                }
+                            />
+                        )}
                     </div>
                     <div className="">
                         {!loading && (
-                            <DisplayArea error={error} errorMsg={errorMsg} output={output} status={status} isCheckingIn={isCheckIn} />
+                            <DisplayArea
+                                error={error}
+                                errorMsg={errorMsg}
+                                output={output}
+                                status={status}
+                                isCheckingIn={isCheckIn}
+                            />
                         )}
                     </div>
                 </div>
