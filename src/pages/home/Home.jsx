@@ -16,6 +16,7 @@ const Home = () => {
     const [eventId, setEventId] = useState(0);
     const [event, setEvent] = useState(null);
     const [errorMsg, setErrorMsg] = useState(null);
+    const [logs, setLogs] = useState([]);
 
     const { loading, error, fetchData } = useFetch();
 
@@ -59,6 +60,22 @@ const Home = () => {
         getData();
     }, [eventId, fetchData]);
 
+    // Load logs from localStorage on component mount
+    useEffect(() => {
+        const storedLogs = JSON.parse(localStorage.getItem('checkinLogs')) || [];
+        setLogs(storedLogs);
+    }, []);
+
+    const downloadLogFile = () => {
+        const logData = logs.join('\n');
+        const blob = new Blob([logData], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'checkin_log.txt';
+        a.click();
+    };
+
     const checkEntry = async (value) => {
         if (Number.isNaN(Number(value))) {
             setErrorMsg('Invalid QR Code');
@@ -85,6 +102,14 @@ const Home = () => {
             } else {
                 setStatus('error');
             }
+
+            // Add a new log entry
+            const timestamp = new Date().toISOString();
+            const logEntry = `${timestamp} - ${value} - ${selectedZone} - ${isCheckIn ? 'in' : 'out'} - ${message}`;
+            const newLogs = [...logs, logEntry];
+
+            setLogs(newLogs);
+            localStorage.setItem('checkinLogs', JSON.stringify(newLogs));
         } else {
             setStatus('error');
         }
@@ -108,6 +133,7 @@ const Home = () => {
                             ))}
                     </div>
                     <div className="flex flex-col gap-5">
+                        <span onClick={downloadLogFile} className='w-full text-center cursor-pointer hover:font-semibold'>LOGS</span>
                         <CheckCard
                             image={icons.checkIn}
                             text="in"
