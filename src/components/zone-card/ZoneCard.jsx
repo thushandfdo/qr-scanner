@@ -6,12 +6,12 @@ const ZoneCard = ({ id, active = false, title = '-', setSelectedZone }) => {
     return (
         <div
             onClick={onZoneClick}
-            className={`flex flex-col cursor-pointer ${active ? 'bg-gray-400' : ''}`}
+            className={`flex flex-col cursor-pointer ${active ? 'bg-black' : ''}`}
         >
-            {active && <div className="h-3 bg-white rounded-br-2xl"></div>}
-            <div className="bg-white">
+            {active && <div className="h-3 bg-primary-gray rounded-br-2xl"></div>}
+            <div className="text-gray-200 bg-primary-gray">
                 <div
-                    className={`rounded-l-2xl ml-2 ${active ? 'bg-gray-400 border-r-2 border-gray-100' : 'hover:bg-gray-400 hover:rounded-2xl hover:mr-2'}`}
+                    className={`rounded-l-2xl ml-2 ${active ? 'bg-black border-r-2 border-gray-100' : 'hover:bg-black hover:rounded-2xl hover:mr-2'}`}
                 >
                     <div className={`-rotate-90 h-36 flex items-center justify-center whitespace-nowrap`}>
                         <span
@@ -22,7 +22,7 @@ const ZoneCard = ({ id, active = false, title = '-', setSelectedZone }) => {
                     </div>
                 </div>
             </div>
-            {active && <div className="h-3 bg-white rounded-tr-2xl"></div>}
+            {active && <div className="h-3 bg-primary-gray rounded-tr-2xl"></div>}
         </div>
     );
 };

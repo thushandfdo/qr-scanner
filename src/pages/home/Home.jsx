@@ -93,7 +93,7 @@ const Home = () => {
     return (
         <div className="">
             {eventId === 0 && <EventLayer setEventId={setEventId} />}
-            <div className="flex h-screen py-4" onClick={setFocus}>
+            <div className="flex h-screen bg-primary-gray" onClick={setFocus}>
                 <div className="flex flex-col justify-between w-16 gap-1 mt-5">
                     <div className="">
                         {event &&
@@ -122,7 +122,7 @@ const Home = () => {
                         />
                     </div>
                 </div>
-                <div className="grid grid-cols-1 grid-rows-2 w-full lg:grid-cols-2 lg:grid-rows-1 justify-center items-center rounded-l-lg bg-gradient-to-r from-gray-400 from-10% via-gray-100 to-white">
+                <div className="grid grid-cols-1 grid-rows-2 w-full lg:grid-cols-2 lg:grid-rows-1 justify-center items-center rounded-l-lg bg-gradient-to-r from-black from-10% to-slate-900">
                     <div className="">
                         {event && (
                             <ScanArea
