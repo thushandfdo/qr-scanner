@@ -18,7 +18,7 @@ const CheckCard = ({ image, text, active, swapStatus }) => {
             />
             <span
                 className={`text-lg font-semibold tracking-widest 
-                    ${active && text === 'in' ? 'text-green-700' : active && text === 'out' ? 'text-red-800' : ''} 
+                    ${active && text === 'in' ? 'text-green-700' : active && text === 'out' ? 'text-red-500' : ''} 
                 uppercase`}
             >
                 {text}

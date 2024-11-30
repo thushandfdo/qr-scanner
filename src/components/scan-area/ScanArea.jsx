@@ -1,10 +1,12 @@
+// local imports
+import { images } from "../../consts";
+
 const ScanArea = ({
     inputRef,
     setOutput,
     handleClear,
     checkEntry,
     eventName,
-    zone,
     input,
     setInput
 }) => {
@@ -22,21 +24,15 @@ const ScanArea = ({
     };
 
     return (
-        <div className="flex flex-col items-center justify-center h-full gap-5">
+        <div className="flex flex-col items-center justify-center h-full gap-5 text-gray-100">
+            <img src={images.logo} alt="logo" className='w-96 h-9w-96' />
             <p className="mb-2 text-5xl font-semibold">{eventName}</p>
-            <p className="mb-10 text-2xl italic text-gray-800">
-                Welcome to the
-                <span className="p-2 text-3xl font-semibold tracking-wider text-blue-700">
-                    {zone}
-                </span>
-                zone..!
-            </p>
-            <div className="flex flex-col items-center gap-3">
+            <div className="flex flex-col items-center gap-5">
                 <input
                     autoFocus
                     ref={inputRef}
                     type="text"
-                    className="p-2 text-center border border-black rounded-lg w-96"
+                    className="p-2 text-center text-black border border-black rounded-lg w-96"
                     placeholder="Scan your QR Code..."
                     value={input}
                     onChange={(e) => updateInput(e.target.value)}
@@ -45,7 +41,7 @@ const ScanArea = ({
                     }
                 />
                 <button
-                    className="w-48 px-4 py-2 font-semibold tracking-wider text-white uppercase rounded-lg bg-slate-800"
+                    className="w-48 px-4 py-2 font-semibold tracking-wider text-white uppercase rounded-lg bg-slate-500"
                     onClick={handleClear}>
                     Clear Screen
                 </button>
