@@ -41,7 +41,7 @@ const DisplayArea = ({ output, status, isCheckingIn = true, error, errorMsg }) =
                     <div className="border-2 border-green-900 rounded-xl w-[500px] h-[300px] flex flex-col gap-5 justify-center items-center text-3xl">
                         <p>ID: {output}</p>
                         <p className="font-semibold">
-                            {isCheckingIn ? 'is eligible to this zone' : 'is a valid check-out'}
+                            {'is a valid attempt'}
                         </p>
                     </div>
                 </div>

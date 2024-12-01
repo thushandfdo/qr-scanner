@@ -18,9 +18,9 @@ const ScanArea = ({
 
     const updateInput = (value) => {
         setInput(value);
-        setTimeout(() => {
-            setInput('');
-        }, 1000);
+        // setTimeout(() => {
+        //     setInput('');
+        // }, 1000);
     };
 
     return (
