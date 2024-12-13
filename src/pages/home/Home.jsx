@@ -15,8 +15,10 @@ const Home = () => {
     const [status, setStatus] = useState(null);
     const [eventId, setEventId] = useState(0);
     const [event, setEvent] = useState(null);
-    const [errorMsg, setErrorMsg] = useState(null);
+    const [message, setMessage] = useState(null);
     const [logs, setLogs] = useState([]);
+    const [attempt, setAttempt] = useState(null);
+    const [updatedAt, setUpdatedAt] = useState(null);
 
     const { loading, error, fetchData } = useFetch();
 
@@ -78,7 +80,7 @@ const Home = () => {
 
     const checkEntry = async (value) => {
         if (Number.isNaN(Number(value))) {
-            setErrorMsg('Invalid QR Code');
+            setMessage('Invalid QR Code');
             setStatus('error');
             return;
         }
@@ -89,14 +91,17 @@ const Home = () => {
                 method: 'POST',
                 body: JSON.stringify({
                     index: Number(value),
-                    requestedZone: selectedZone
+                    requestedZone: selectedZone,
+                    event: eventId
                 })
             }
         );
 
         if (result) {
-            const { status_code, message } = result;
-            setErrorMsg(message);
+            const { status_code, message, attempt, updatedAt } = result;
+            setMessage(message);
+            setAttempt(attempt);
+            setUpdatedAt(updatedAt);
             if (status_code === 200) {
                 setStatus('success');
             } else {
@@ -169,10 +174,12 @@ const Home = () => {
                         {!loading && (
                             <DisplayArea
                                 error={error}
-                                errorMsg={errorMsg}
+                                message={message}
                                 output={output}
                                 status={status}
                                 isCheckingIn={isCheckIn}
+                                attempt={attempt}
+                                updatedAt={updatedAt}
                             />
                         )}
                     </div>
