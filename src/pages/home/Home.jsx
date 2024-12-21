@@ -98,10 +98,21 @@ const Home = () => {
         );
 
         if (result) {
-            const { status_code, message, attempt, updatedAt } = result;
+            const { status_code, message, attendance } = result;
+            let localDate = null;
+            let attempt = null;
+            // Safely handle the case where `attendance` might be missing
+            if (attendance) {
+                const { updatedAt } = attendance;
+                attempt = attendance.attempt;
+                if (updatedAt) {
+                    const utcDate = new Date(updatedAt);
+                    localDate = utcDate.toLocaleString('en-US', { timeZone: 'Asia/Colombo' });
+                }
+            }
             setMessage(message);
             setAttempt(attempt);
-            setUpdatedAt(updatedAt);
+            setUpdatedAt(localDate);
             if (status_code === 200) {
                 setStatus('success');
             } else {
